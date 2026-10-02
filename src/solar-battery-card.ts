@@ -24,7 +24,8 @@ import {
   energyInKwh,
   entity,
   estimateFullTime,
-  formatValue,
+  formatEnergy,
+  formatPower,
   numericState,
   powerInKw
 } from "./values";
@@ -216,7 +217,7 @@ export class SolarBatteryCard extends LitElement {
           : clamp(current + (event.key === "ArrowLeft" ? -1 : 1), 0, pointCount - 1);
   }
 
-  private _renderChart(points: HistoryPoint[], locale?: string) {
+  private _renderChart(points: HistoryPoint[], locale?: string, autoScale = true) {
     const values = points.flatMap((point) => [
       point.solar,
       point.home,
@@ -359,9 +360,10 @@ export class SolarBatteryCard extends LitElement {
                     <div class="tooltip-item ${item.key}">
                       <span><i></i>${item.label}</span>
                       <strong>
-                        ${formatValue(item.value, "kW", {
+                        ${formatPower(item.value, {
                           signed: item.signed,
-                          locale
+                          locale,
+                          autoScale
                         })}
                       </strong>
                     </div>
@@ -380,6 +382,7 @@ export class SolarBatteryCard extends LitElement {
 
     const hass = this.hass;
     const locale = hass?.locale?.language ?? hass?.language;
+    const autoScale = config.auto_scale_units !== false;
     const stateOfCharge = clamp(
       numericState(entity(hass, config.battery_soc)) ?? 0,
       0,
@@ -508,9 +511,10 @@ export class SolarBatteryCard extends LitElement {
                     : localize("battery.idle", locale)}
               </span>
               <strong>
-                ${formatValue(chargingPower, "kW", {
+                ${formatPower(chargingPower, {
                   signed: true,
-                  locale
+                  locale,
+                  autoScale
                 })}
               </strong>
             </div>
@@ -527,9 +531,10 @@ export class SolarBatteryCard extends LitElement {
                 <div class="power-stat ${item.tone}">
                   <span>${item.label}</span>
                   <strong>
-                    ${formatValue(item.value, "kW", {
+                    ${formatPower(item.value, {
                       signed: item.signed,
-                      locale
+                      locale,
+                      autoScale
                     })}
                   </strong>
                 </div>
@@ -545,7 +550,7 @@ export class SolarBatteryCard extends LitElement {
                     <h2>${localize("chart.heading", locale)}</h2>
                     <time>${timeFormatter.format(new Date())}</time>
                   </div>
-                  ${this._renderChart(chartPoints, locale)}
+                  ${this._renderChart(chartPoints, locale, autoScale)}
                   <div class="chart-axis" aria-hidden="true">
                     <span>${localize("chart.axis_start", locale)}</span>
                     <span>18h</span>
@@ -571,7 +576,7 @@ export class SolarBatteryCard extends LitElement {
                   <i aria-hidden="true"></i>
                   <div>
                     <span>${item.label}</span>
-                    <strong>${formatValue(item.value, "kWh", { digits: 1, locale })}</strong>
+                    <strong>${formatEnergy(item.value, { locale, autoScale })}</strong>
                   </div>
                 </div>
               `

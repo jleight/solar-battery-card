@@ -4,7 +4,8 @@ import type { HomeAssistant, SolarBatteryCardConfig } from "./types";
 export const DEFAULT_CONFIG: Partial<SolarBatteryCardConfig> = {
   battery_positive_is_charging: true,
   grid_positive_is_export: true,
-  show_power_chart: true
+  show_power_chart: true,
+  auto_scale_units: true
 };
 
 const ENTITY_FIELDS = [
@@ -29,13 +30,15 @@ const LABELLED_FIELDS = [
   "battery_capacity",
   "battery_positive_is_charging",
   "grid_positive_is_export",
-  "show_power_chart"
+  "show_power_chart",
+  "auto_scale_units"
 ] as const;
 
 const HELPED_FIELDS = [
   "battery_capacity",
   "battery_positive_is_charging",
-  "grid_positive_is_export"
+  "grid_positive_is_export",
+  "auto_scale_units"
 ] as const;
 
 type LabelledField = (typeof LABELLED_FIELDS)[number];
@@ -114,7 +117,8 @@ export function getConfigForm(locale?: string) {
           },
           { name: "battery_positive_is_charging", selector: { boolean: {} } },
           { name: "grid_positive_is_export", selector: { boolean: {} } },
-          { name: "show_power_chart", selector: { boolean: {} } }
+          { name: "show_power_chart", selector: { boolean: {} } },
+          { name: "auto_scale_units", selector: { boolean: {} } }
         ]
       }
     ],

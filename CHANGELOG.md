@@ -5,6 +5,11 @@ Semantic Versioning.
 
 ## [Unreleased]
 
+### Added
+
+- Added a **Show small values in W and Wh** option, on by default, that shows
+  power under 1 kW in `W` and energy under 1 kWh in `Wh`.
+
 ### Fixed
 
 - Hold each recorded power value until the next change in the 24-hour chart
@@ -12,6 +17,9 @@ Semantic Versioning.
   the next recorded state.
 - Average each chart point over the window around it so short loads between
   points still appear.
+- Distinguish `MW` (megawatts) from `mW` (milliwatts), and `MWh` from `mWh`,
+  when converting entity units.
+- Show values that round to zero without a minus sign instead of `-0.00`.
 
 ## [0.2.0] - 2026-09-05
 

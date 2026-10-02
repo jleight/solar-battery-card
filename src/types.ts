@@ -42,6 +42,7 @@ export interface SolarBatteryCardConfig {
   battery_positive_is_charging?: boolean;
   grid_positive_is_export?: boolean;
   show_power_chart?: boolean;
+  auto_scale_units?: boolean;
 }
 
 export interface HistoryPoint {

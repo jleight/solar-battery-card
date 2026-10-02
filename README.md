@@ -163,6 +163,8 @@ from the daily value and will not represent total energy stored or exported.
 - Enable **Positive grid power means export** only when the grid power entity
   is positive while exporting. Disable it if export is negative.
 - **Show 24-hour power chart** controls the live-power history chart.
+- **Show small values in W and Wh** shows power under 1 kW in `W` and energy
+  under 1 kWh in `Wh`. Disable it to always show `kW` and `kWh`.
 
 ## Install with HACS
 

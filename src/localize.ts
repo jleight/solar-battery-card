@@ -57,12 +57,15 @@ const EN = {
   "editor.field.battery_positive_is_charging": "Positive battery power means charging",
   "editor.field.grid_positive_is_export": "Positive grid power means export",
   "editor.field.show_power_chart": "Show 24-hour power chart",
+  "editor.field.auto_scale_units": "Show small values in W and Wh",
   "editor.helper.battery_capacity":
     "Optional. Used to estimate when the battery will be full.",
   "editor.helper.battery_positive_is_charging":
     "Turn this off if your integration reports charging as a negative value.",
   "editor.helper.grid_positive_is_export":
     "Turn this off if your integration reports grid export as a negative value.",
+  "editor.helper.auto_scale_units":
+    "Values under 1 kW or 1 kWh are shown in W or Wh instead.",
   "editor.error.required": "{field} is required."
 } as const;
 
@@ -130,12 +133,15 @@ const DE: Record<TranslationKey, string> = {
     "Positive Batterieleistung bedeutet Laden",
   "editor.field.grid_positive_is_export": "Positive Netzleistung bedeutet Einspeisung",
   "editor.field.show_power_chart": "24-Stunden-Diagramm anzeigen",
+  "editor.field.auto_scale_units": "Kleine Werte in W und Wh anzeigen",
   "editor.helper.battery_capacity":
     "Optional. Dient der Sch\u00e4tzung, wann die Batterie voll ist.",
   "editor.helper.battery_positive_is_charging":
     "Deaktivieren, wenn deine Integration das Laden als negativen Wert meldet.",
   "editor.helper.grid_positive_is_export":
     "Deaktivieren, wenn deine Integration die Einspeisung als negativen Wert meldet.",
+  "editor.helper.auto_scale_units":
+    "Werte unter 1 kW bzw. 1 kWh werden stattdessen in W bzw. Wh angezeigt.",
   "editor.error.required": "{field} ist erforderlich."
 };
 

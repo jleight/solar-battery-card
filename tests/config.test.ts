@@ -29,7 +29,8 @@ describe("card configuration", () => {
     expect(normalizeConfig(validConfig)).toMatchObject({
       battery_positive_is_charging: true,
       grid_positive_is_export: true,
-      show_power_chart: true
+      show_power_chart: true,
+      auto_scale_units: true
     });
   });
 
