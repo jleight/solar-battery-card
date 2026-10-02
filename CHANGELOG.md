@@ -5,6 +5,14 @@ Semantic Versioning.
 
 ## [Unreleased]
 
+### Fixed
+
+- Hold each recorded power value until the next change in the 24-hour chart
+  instead of interpolating toward it, so idle periods no longer ramp toward
+  the next recorded state.
+- Average each chart point over the window around it so short loads between
+  points still appear.
+
 ## [0.2.0] - 2026-09-05
 
 ### Added

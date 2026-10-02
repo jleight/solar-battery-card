@@ -35,44 +35,34 @@ function normalizedPower(state: HassEntity | undefined, reference: HassEntity | 
   );
 }
 
-function valueAt(
+// Home Assistant records a state only when it changes, so each value holds
+// until the next recorded state rather than ramping toward it.
+function averageOver(
   series: HassEntity[],
-  timestamp: number,
+  from: number,
+  to: number,
   reference: HassEntity | undefined
 ): number {
   if (series.length === 0) return 0;
 
-  let before = series[0];
-  let after = series.at(-1) ?? series[0];
+  let value = normalizedPower(series[0], reference);
+  let cursor = from;
+  let total = 0;
 
   for (const state of series) {
     const stateTime = Date.parse(state.last_changed ?? state.last_updated ?? "");
     if (!Number.isFinite(stateTime)) continue;
-    if (stateTime <= timestamp) before = state;
-    if (stateTime >= timestamp) {
-      after = state;
-      break;
+    if (stateTime > cursor) {
+      const until = Math.min(stateTime, to);
+      total += value * (until - cursor);
+      cursor = until;
+      if (cursor >= to) break;
     }
+    value = normalizedPower(state, reference);
   }
 
-  const beforeTime = Date.parse(before.last_changed ?? before.last_updated ?? "");
-  const afterTime = Date.parse(after.last_changed ?? after.last_updated ?? "");
-  const beforeValue = normalizedPower(before, reference);
-  const afterValue = normalizedPower(after, reference);
-
-  if (
-    !Number.isFinite(beforeTime) ||
-    !Number.isFinite(afterTime) ||
-    beforeTime === afterTime
-  ) {
-    return beforeValue;
-  }
-
-  const progress = Math.min(
-    1,
-    Math.max(0, (timestamp - beforeTime) / (afterTime - beforeTime))
-  );
-  return beforeValue + (afterValue - beforeValue) * progress;
+  if (cursor < to) total += value * (to - cursor);
+  return to > from ? total / (to - from) : value;
 }
 
 export async function fetchPowerHistory(
@@ -94,14 +84,20 @@ export async function fetchPowerHistory(
   const home = seriesByEntity(response, entities.home);
   const battery = seriesByEntity(response, entities.battery);
 
+  const span = end.getTime() - start.getTime();
+  const halfBucket = span / (BUCKET_COUNT - 1) / 2;
+
   return Array.from({ length: BUCKET_COUNT }, (_, index) => {
-    const timestamp =
-      start.getTime() + (index / (BUCKET_COUNT - 1)) * (end.getTime() - start.getTime());
+    const timestamp = start.getTime() + (index / (BUCKET_COUNT - 1)) * span;
+    // Each point averages the window around it, so changes between points
+    // still show up instead of being skipped.
+    const from = Math.max(start.getTime(), timestamp - halfBucket);
+    const to = Math.min(end.getTime(), timestamp + halfBucket);
     return {
       timestamp,
-      solar: Math.max(0, valueAt(solar, timestamp, hass.states[entities.solar])),
-      home: Math.max(0, valueAt(home, timestamp, hass.states[entities.home])),
-      battery: valueAt(battery, timestamp, hass.states[entities.battery])
+      solar: Math.max(0, averageOver(solar, from, to, hass.states[entities.solar])),
+      home: Math.max(0, averageOver(home, from, to, hass.states[entities.home])),
+      battery: averageOver(battery, from, to, hass.states[entities.battery])
     };
   });
 }
